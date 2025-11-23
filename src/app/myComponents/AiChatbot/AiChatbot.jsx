@@ -13,39 +13,9 @@ export default function AiChatbot() {
 
   // step 1
   //   api key
-  const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
   // step 2
   // ask Gemini
-  const sendMessageToGemini = async (userMessage, apiKey) => {
-    try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [{ text: userMessage }],
-              },
-            ],
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      return (
-        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "Error: No response from model."
-      );
-    } catch (e) {
-      return "Error connecting to Gemini API.";
-    }
-  };
 
   const inputHandler = (e) => {
     setInputValue(e.target.value);
@@ -74,14 +44,10 @@ export default function AiChatbot() {
 
     // step 3
     // sending user data to gemini and getting its response
-    const aiReply = await sendMessageToGemini(inputValue, API_KEY);
 
     // step 4
 
     // saving gemini data
-    const copyAi = [...aiData];
-    copyAi.push(aiReply);
-    setAiData(copyAi);
   };
 
   //  step 6(extra) part 1 to 4
@@ -119,7 +85,7 @@ export default function AiChatbot() {
 
               <div className="message-row ai-row">
                 {/* step 5 */}
-                <div className="message-bubble ai-msg">{aiData[index]}</div>
+                <div className="message-bubble ai-msg">ai respond</div>
               </div>
             </div>
           );
