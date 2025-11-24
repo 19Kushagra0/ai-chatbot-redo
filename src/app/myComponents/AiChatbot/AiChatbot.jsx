@@ -13,9 +13,42 @@ export default function AiChatbot() {
 
   // step 1
   //   api key
+  const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
   // step 2
   // ask Gemini
+  const askGemini = async (key, userInput) => {
+    try {
+      const response = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        {
+          headers: {
+            "x-goog-api-key": key,
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: userInput,
+                  },
+                ],
+              },
+            ],
+          }),
+        }
+      );
+
+      const data = await response.json();
+      return (
+        data?.candidates?.[0]?.content?.parts?.[0]?.text || "AI reply not found"
+      );
+    } catch (e) {
+      console.log("Gemini is not responding");
+    }
+  };
 
   const inputHandler = (e) => {
     setInputValue(e.target.value);
@@ -44,10 +77,16 @@ export default function AiChatbot() {
 
     // step 3
     // sending user data to gemini and getting its response
+    let data = await askGemini(apiKey, inputValue);
+    console.log(data);
 
     // step 4
 
     // saving gemini data
+
+    const copyAiData = [...aiData];
+    copyAiData.push(data);
+    setAiData(copyAiData);
   };
 
   //  step 6(extra) part 1 to 4
