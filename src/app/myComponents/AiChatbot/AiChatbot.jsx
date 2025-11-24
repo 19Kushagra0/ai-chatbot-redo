@@ -124,7 +124,7 @@ export default function AiChatbot() {
 
               <div className="message-row ai-row">
                 {/* step 5 */}
-                <div className="message-bubble ai-msg">{aiData[index]}</div>
+                <div className="message-bubble ai-msg">ai respond</div>
               </div>
             </div>
           );
