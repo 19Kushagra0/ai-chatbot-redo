@@ -1,173 +1,98 @@
-// ai chatbot in 5 step + 3 extra step
-
-"use client";
-import React, { useState, useRef, useEffect } from "react";
-
-import "@/app/myComponents/AiChatbot/AiChatbot.css";
+"use client"
+import React from 'react';
+import './AiChatbot.css';
+import Image from 'next/image';
 
 export default function AiChatbot() {
-  const [userData, setUserData] = useState([]);
-  const [aiData, setAiData] = useState([]);
-
-  const [inputValue, setInputValue] = useState("");
-
-  // step 1
-  //   api key
-  const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-
-  // step 2
-  // ask Gemini
-  const askGemini = async (key, userInput) => {
-    try {
-      const response = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
-        {
-          headers: {
-            "x-goog-api-key": key,
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [
-                  {
-                    text: userInput,
-                  },
-                ],
-              },
-            ],
-          }),
-        }
-      );
-
-      const data = await response.json();
-      return (
-        data?.candidates?.[0]?.content?.parts?.[0]?.text || "AI reply not found"
-      );
-    } catch (e) {
-      console.log("Gemini is not responding");
-    }
-  };
-
-  const inputHandler = (e) => {
-    setInputValue(e.target.value);
-  };
-
-  const inputButton = async () => {
-    console.log(inputValue);
-
-    // check if value is undefined
-    if (inputValue.trim() === "") {
-      return;
-    }
-
-    // saving user data
-    const copydata = [...userData];
-    copydata.push(inputValue);
-    setUserData(copydata);
-
-    //  step 7(extra)
-    // show typing till ai respond
-    const showTyping = [...aiData];
-    showTyping.push("typing...");
-    setAiData(showTyping);
-
-    setInputValue("");
-
-    // step 3
-    // sending user data to gemini and getting its response
-    let data = await askGemini(apiKey, inputValue);
-    console.log(data);
-
-    // step 4
-
-    // saving gemini data
-
-    const copyAiData = [...aiData];
-    copyAiData.push(data);
-    setAiData(copyAiData);
-  };
-
-  //  step 6(extra) part 1 to 4
-  //  step 6(extra) part 1
-  const messagesEndRef = useRef(null);
-  //  step 6(extra) part 2
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-  //  step 6(extra) part 3
-  useEffect(() => {
-    scrollToBottom();
-  }, [userData, aiData]);
-
-  // also change css
-  //   .aiChatbot-messages {
-  //   overflow-y: auto;
-  // }
   return (
-    <div className="aiChatbot-full-container">
-      {/* Header */}
-      <div className="aiChatbot-header">
-        <div className="header-left">
-          <span className="header-title">Chat bot</span>
+    <div className="ai-chatbot-container">
+      {/* Sidebar */}
+
+      {/* Main Chat Area */}
+      <div className="chatbot-main">
+        <div className="messages-container">
+
+          {/* User Message */}
+          <div className="message-wrapper user">
+            <div className="message-header">
+
+
+              <span className="message-question">What is React?</span>
+            </div>
+          </div>
+
+          {/* AI Response */}
+          <div className="message-wrapper ai">
+            <div className="ai-header">ChatBot</div>
+            <div className="ai-content">
+              <span>React is a JavaScript library used to build fast and interactive user interfaces. It helps developers create reusable UI components and manage application state efficiently.</span>
+            </div>
+          </div>
+
+          {/* User Message */}
+          <div className="message-wrapper user">
+            <div className="message-header">
+
+              <span className="message-question">Why should I use Next.js instead of plain React?</span>
+            </div>
+          </div>
+
+          {/* AI Response */}
+          <div className="message-wrapper ai">
+            <div className="ai-header">ChatBot</div>
+            <div className="ai-content">
+              <span>Next.js provides features like server-side rendering, file-based routing, and performance optimizations out of the box, making it easier to build production-ready React applications.</span>
+            </div>
+          </div>
+
         </div>
-      </div>
-      {/* Messages Area */}
-      <div className="aiChatbot-messages">
-        {userData.map((el, index, arr) => {
-          return (
-            <div key={index} className="aiChatbot-messages-box">
-              <div className="message-row user-row">
-                <div className="message-bubble user-msg">{el}</div>
+
+        {/* Floating Input Area */}
+        <div className="input-area-wrapper">
+          <div className="input-container">
+            <div className="input-icon">
+              <div className="add-icon-container">
+
+
+                <svg
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="add-icon"
+                  fill="none"
+                >
+                  <path
+                    d="M4.666,19.63a6.765,6.765,0,0,1-.148-9.713l6.8-6.8a4.845,4.845,0,1,1,6.852,6.851l-6.8,6.8a2.992,2.992,0,0,1-4.132,0,2.927,2.927,0,0,1,0-4.133L12.673,7.2a1,1,0,0,1,1.414,1.414L8.65,14.049a.925.925,0,0,0,0,1.3.945.945,0,0,0,1.3,0l6.8-6.8a2.845,2.845,0,0,0-4.023-4.023l-6.8,6.8a4.766,4.766,0,0,0,.1,6.843,4.93,4.93,0,0,0,6.807-.273l7.984-7.984a1,1,0,1,1,1.414,1.414l-7.984,7.984A7.122,7.122,0,0,1,9.223,21.4,6.607,6.607,0,0,1,4.666,19.63Z"
+                    fill="currentColor"
+                  />
+                </svg>
               </div>
 
-              <div className="message-row ai-row">
-                {/* step 5 */}
-                <div className="message-bubble ai-msg">ai respond</div>
-              </div>
             </div>
-          );
-        })}
-        {/* // step 6(extra) part 4 */}
-        <div ref={messagesEndRef} className=""></div>
+            <input type="text" placeholder="Ask anything..." />
+            <button className="send-btn">
+
+
+              <svg
+                className='send-icon'
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+              >
+                <path
+                  d="M10.3009 13.6949L20.102 3.89742M10.5795 14.1355L12.8019 18.5804C13.339 19.6545 13.6075 20.1916 13.9458 20.3356C14.2394 20.4606 14.575 20.4379 14.8492 20.2747C15.1651 20.0866 15.3591 19.5183 15.7472 18.3818L19.9463 6.08434C20.2845 5.09409 20.4535 4.59896 20.3378 4.27142C20.2371 3.98648 20.013 3.76234 19.7281 3.66167C19.4005 3.54595 18.9054 3.71502 17.9151 4.05315L5.61763 8.2523C4.48114 8.64037 3.91289 8.83441 3.72478 9.15032C3.56153 9.42447 3.53891 9.76007 3.66389 10.0536C3.80791 10.3919 4.34498 10.6605 5.41912 11.1975L9.86397 13.42C10.041 13.5085 10.1295 13.5527 10.2061 13.6118C10.2742 13.6643 10.3352 13.7253 10.3876 13.7933C10.4468 13.87 10.491 13.9585 10.5795 14.1355Z"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+
+
       </div>
-      {/* Input Area */}
-      <div className="aiChatbot-input-area">
-        {/* Textarea instead of Input */}
-        <textarea
-          placeholder="Ask me"
-          className="chat-input"
-          rows="1"
-          value={inputValue}
-          onChange={inputHandler}
-          // if enter key is pressed take input
-          onKeyDown={(e) => {
-            {
-              /* // step 8(extra)  */
-            }
-            if (e.key === "Enter") {
-              e.preventDefault(); // prevents new line
-              inputButton(); // triggers your send function
-            }
-          }}
-        ></textarea>
-        <button className="send-btn" onClick={inputButton}>
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="22" y1="2" x2="11" y2="13"></line>
-            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-          </svg>
-        </button>
-      </div>
-    </div>
+    </div >
   );
 }
