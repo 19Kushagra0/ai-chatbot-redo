@@ -210,3 +210,14 @@
 }
 
 /* Upgrade Tab Removed */
+@media screen and (max-width: 800px) {
+  .chatbot-main {
+    padding: 2rem 1rem;
+  }
+
+  .message-wrapper.ai {
+    padding-left: 0rem;
+    /* Align with text start of user msg */
+  }
+
+}
