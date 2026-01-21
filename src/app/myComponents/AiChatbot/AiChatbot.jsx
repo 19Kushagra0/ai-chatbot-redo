@@ -1,51 +1,109 @@
 "use client"
-import React from 'react';
+import React, { useState } from 'react';
 import './AiChatbot.css';
-import Image from 'next/image';
+import ReactMarkdown from "react-markdown";
 
 export default function AiChatbot() {
+
+
+
+  const [userData, setUserData] = useState([])
+  const [AiData, setAiData] = useState([])
+
+
+  const [inputValue, setInputValue] = useState("");
+  const inputHandler = (e) => {
+    setInputValue(e.target.value)
+  }
+
+  const userInputHandler = async () => {
+
+
+    if (inputValue.trim() === "") {
+      return;
+    }
+
+    console.log(inputValue);
+    const copydata = [...userData];
+    copydata.push(inputValue)
+    setUserData(copydata)
+
+    setInputValue("")
+    const copyAiData = [...AiData];
+    copyAiData.push("typing...")
+    setAiData(copyAiData)
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        body: JSON.stringify({
+          message: inputValue
+        })
+      })
+      const data = await response.json()
+
+      const copyAiData = [...AiData];
+      copyAiData.push(data.message)
+      setAiData(copyAiData)
+
+    } catch (error) {
+      console.log("unable to fetch data");
+      const copyAiData = [...AiData];
+      copyAiData.push("Unable to get response.");
+      setAiData(copyAiData);
+    }
+
+    console.log(userData);
+
+    console.log(AiData);
+
+
+  }
   return (
     <div className="ai-chatbot-container">
       {/* Sidebar */}
 
       {/* Main Chat Area */}
       <div className="chatbot-main">
-        <div className="messages-container">
+        {
+          userData.map((el, index, arr) => {
+            return (
+              <div key={index} className="messages-container">
 
-          {/* User Message */}
-          <div className="message-wrapper user">
-            <div className="message-header">
+                {/* User Message */}
+                <div className="message-wrapper user">
+                  <div className="message-header">
+
+                    <div className="user-avatar"></div>
+                    <span className="message-question">{el}</span>
+                  </div>
+                </div>
+
+                {/* AI Response */}
+                <div className="message-wrapper ai">
+                  <div className="ai-header">ChatBot</div>
+                  <div className="ai-content">
+                    {AiData[index] === "typing..." ? (
+                      <div className="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </div>
+                    ) : (
+                      <span>
+                        <ReactMarkdown>{AiData[index]}</ReactMarkdown>
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {AiData[index] !== "typing..." && <hr className='message-divider' />}
+              </div>
+
+            )
+          })}
 
 
-              <span className="message-question">What is React?</span>
-            </div>
-          </div>
-
-          {/* AI Response */}
-          <div className="message-wrapper ai">
-            <div className="ai-header">ChatBot</div>
-            <div className="ai-content">
-              <span>React is a JavaScript library used to build fast and interactive user interfaces. It helps developers create reusable UI components and manage application state efficiently.</span>
-            </div>
-          </div>
-
-          {/* User Message */}
-          <div className="message-wrapper user">
-            <div className="message-header">
-
-              <span className="message-question">Why should I use Next.js instead of plain React?</span>
-            </div>
-          </div>
-
-          {/* AI Response */}
-          <div className="message-wrapper ai">
-            <div className="ai-header">ChatBot</div>
-            <div className="ai-content">
-              <span>Next.js provides features like server-side rendering, file-based routing, and performance optimizations out of the box, making it easier to build production-ready React applications.</span>
-            </div>
-          </div>
-
-        </div>
 
         {/* Floating Input Area */}
         <div className="input-area-wrapper">
@@ -68,8 +126,18 @@ export default function AiChatbot() {
               </div>
 
             </div>
-            <input type="text" placeholder="Ask anything..." />
-            <button className="send-btn">
+            <input
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  userInputHandler();
+                }
+              }}
+              onChange={inputHandler}
+              value={inputValue}
+              type="text"
+              placeholder="Ask anything..."
+            />
+            <button onClick={userInputHandler} className="send-btn">
 
 
               <svg
